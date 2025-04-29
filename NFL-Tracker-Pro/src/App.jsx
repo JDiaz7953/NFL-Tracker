@@ -1,84 +1,168 @@
-//import { useState } from 'react'
+import { useState, useEffect } from "react";
+import PickCard from "./components/PickCard";
 import "./App.css";
-import NavBar from "./components/NavBar";
-import Header from "./components/header";
+
+const statOptions = {
+  receiving: [
+    { value: "receptions", label: "Receptions" },
+    { value: "receiving_yards", label: "Receiving Yards" },
+    { value: "receiving_tds", label: "Receiving TDs" },
+  ],
+  rushing: [
+    { value: "rush_attempts", label: "Rush Attempts" },
+    { value: "rushing_yards", label: "Rushing Yards" },
+    { value: "rushing_tds", label: "Rushing TDs" },
+  ],
+  passing: [
+    { value: "pass_attempts", label: "Pass Attempts" },
+    { value: "passing_yards", label: "Passing Yards" },
+    { value: "passing_tds", label: "Passing TDs" },
+  ],
+};
 
 function App() {
+  const [players, setPlayers] = useState([]);
+  const [playerName, setPlayerName] = useState("");
+  const [category, setCategory] = useState("");
+  const [stat, setStat] = useState("");
+  const [value, setValue] = useState("");
+  const [overUnder, setOverUnder] = useState("Over");
+  const [picks, setPicks] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5050/api/players")
+      .then(res => res.json())
+      .then(data => setPlayers(data))
+      .catch(console.error);
+  }, []);
+
+  const handleAddPick = () => {
+    console.log('pressed');
+    console.log('playerName:', playerName);
+    console.log('category:', category);
+    console.log('stat:', stat);
+    console.log('value:', value);
+  
+    if (!playerName || !category || !stat || !value) {
+      console.warn('⚠️ Missing field, cannot submit pick');
+      return;
+    }
+  
+    const p = players.find(p => p.name.toLowerCase().trim() === playerName.toLowerCase().trim());
+    if (!p) {
+      console.warn('⚠️ Player not found in player list');
+      return;
+    }
+  
+    console.log('✅ Adding pick:', p.name);
+  
+    setPicks([
+      ...picks,
+      {
+        playerId: p.id,
+        playerName: p.name,
+        team: p.team,
+        category,
+        stat,
+        value,
+        overUnder,
+      },
+    ]);
+  
+    setPlayerName("");
+    setCategory("");
+    setStat("");
+    setValue("");
+    setOverUnder("Over");
+  };
+  
+
   return (
-    <>
-      <Header />
-      <main className="flex justify-center items-center">
-        <div className="flex w-200 h-200 justify-center items-center">
-          <div className="flex  items-center justify-start bg-zinc-800 h-30 w-175 rounded-2xl shadow-xl ">
-            <div className="flex flex-1 ">
-              <input
-                type="text"
-                placeholder="Search For A Player"
-                className="text-white
-             outline-0 p-3 w-50 border rounded-lg ml-2 relative"
-              />
-              <input
-                type="text"
-                placeholder="value"
-                className="text-white
-             outline-0 p-3 w-25 border rounded-lg ml-2 relative"
-              />
-              <select
-                name="stats"
-                id="id"
-                className="text-white
-             outline-0 p-3 w-25 border rounded-lg ml-2 relative"
-              >
-                <option value=""></option>
-                <option value=""></option>
-                <option value=""></option>
-                <option value=""></option>
-                <option value=""></option>
-              </select>
-              <select
-                name="stats"
-                id="id"
-                className="
-             outline-0 p-3 w-25 border border-white text-white rounded-lg ml-2 relative"
-              >
-                <option className="text-white" value="Over">
-                  Over
-                </option>
-                <option value="Under">Under</option>
-              </select>
-              <select
-                name="stats"
-                id="id"
-                className="text-white
-             outline-0 p-3 w-25 border rounded-lg ml-2 relative"
-              >
-                <option value=""></option>
-                <option value=""></option>
-                <option value=""></option>
-                <option value=""></option>
-                <option value=""></option>
-              </select>
-              <button className="bg-white mt-2 ml-2 flex rounded-xl w-9 h-9 justify-center items-center ">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
+    <main className="flex flex-col items-center mt-8 space-y-6">
+      {/* Form */}
+      <div className="flex items-center bg-zinc-800 rounded-2xl shadow-xl p-4 space-x-2">
+        {/* Search player */}
+        <input
+          type="text"
+          placeholder="Search For A Player"
+          list="player-list"
+          value={playerName}
+          onChange={e => setPlayerName(e.target.value)}
+          className="text-white p-3 w-48 border rounded-lg"
+        />
+        <datalist id="player-list">
+          {players.map(pl => (
+            <option key={pl.id} value={pl.name} />
+          ))}
+        </datalist>
+
+        {/* Target value */}
+        <input
+          type="number"
+          placeholder="value"
+          value={value}
+          onChange={e => setValue(e.target.value)}
+          className="text-white p-3 w-20 border rounded-lg"
+        />
+
+        {/* Category */}
+        <select
+          value={category}
+          onChange={e => {
+            setCategory(e.target.value);
+            setStat("");
+          }}
+          className="text-white p-3 w-28 border rounded-lg"
+        >
+          <option value="">Category</option>
+          <option value="receiving">Receiving</option>
+          <option value="rushing">Rushing</option>
+          <option value="passing">Passing</option>
+        </select>
+
+        {/* Stat */}
+        <select
+          value={stat}
+          onChange={e => setStat(e.target.value)}
+          className="text-white p-3 w-40 border rounded-lg disabled:opacity-50"
+          disabled={!category}
+        >
+          <option value="">Stat</option>
+          {category && statOptions[category].map(s => (
+            <option key={s.value} value={s.value}>
+              {s.label}
+            </option>
+          ))}
+        </select>
+
+        {/* Over/Under */}
+        <select
+          value={overUnder}
+          onChange={e => setOverUnder(e.target.value)}
+          className="text-white p-3 w-24 border rounded-lg"
+        >
+          <option value="Over">Over</option>
+          <option value="Under">Under</option>
+        </select>
+
+        {/* Submit */}
+        <button
+          onClick={handleAddPick}
+          className="bg-white rounded-xl w-9 h-9 flex items-center justify-center"
+        >
+          ➕
+        </button>
+      </div>
+
+      {/* Picks */}
+      {picks.length > 0 && (
+        <div className="flex flex-wrap justify-center gap-4">
+          {picks.map((pick, i) => (
+            <PickCard key={i} pick={pick} />
+          ))}
         </div>
-      </main>
-    </>
+      )}
+    </main>
   );
 }
 
