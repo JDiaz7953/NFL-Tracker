@@ -5,7 +5,7 @@ const express = require("express");
 const mysql = require("mysql2");
 
 const app = express();
-const port = process.env.PORT || 5050;
+const port = process.env.PORT || 5000;
 
 // Allow React frontend at port 5173 to access the backend
 app.use((req, res, next) => {
@@ -19,6 +19,8 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+
+
 
 // ✅ Create MySQL connection
 const db = mysql.createConnection({
@@ -41,7 +43,7 @@ db.connect(err => {
 // Test route
 app.get("/test", (req, res) => {
   console.log("/test route hit");
-  res.send("Server is running on port 5050");
+  res.send("Server is running on port 5000");
 });
 
 // ✅ Route: Get list of players
@@ -107,7 +109,4 @@ app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Backend server running at http://localhost:${port}`);
-});
+
