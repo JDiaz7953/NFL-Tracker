@@ -5,7 +5,7 @@ const express = require("express");
 const mysql = require("mysql2");
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5050;
 
 // Allow React frontend at port 5173 to access the backend
 app.use((req, res, next) => {
