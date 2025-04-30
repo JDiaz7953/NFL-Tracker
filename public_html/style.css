@@ -1,4 +1,4 @@
-\/* General Layout */
+/* General Layout */
 body {
     background-color: #0f1115;
     font-family: 'Segoe UI', sans-serif;
@@ -6,10 +6,10 @@ body {
     padding: 20px;
 }
 
-h1 {
-    color: #f8f8f8;
-    font-size: 2rem;
-    margin-bottom: 20px;
+h1, h4 {
+    color: #ffffff;
+    font-weight: 600;
+    text-align: center;
 }
 
 /* Form Styling */
@@ -20,7 +20,6 @@ form {
     margin-bottom: 2rem;
 }
 
-/* Input group row */
 .leg-row {
     display: flex;
     gap: 0.5rem;
@@ -32,13 +31,12 @@ form {
 
 /* Form Elements */
 input, select, button {
-    border-radius: 20px;
-    border: 1px solid #333;
-    background-color: #2a2c33;
-    color: #eee;
-    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid #3a3a3a;
+    background-color: #1c1e22;
+    color: #f0f0f0;
+    padding: 10px 12px;
     font-size: 0.95rem;
-    border: 1px solid #444;
 }
 
 input::placeholder {
@@ -51,40 +49,42 @@ input::placeholder {
 
 button {
     cursor: pointer;
+    font-weight: 500;
 }
 
 button.btn-success {
-    background-color: #28a745;
+    background-color: #00c474;
     border: none;
+    color: #fff;
 }
 
 button.btn-outline-primary {
     border: 1px solid #5a5c66;
-    background-color: #2a2c33;
-    color: #fff;
+    background-color: transparent;
+    color: #ccc;
 }
 
 button.btn-outline-primary:hover {
-    background-color: #3a3d46;
+    background-color: #333;
 }
 
 button.btn-danger {
     background-color: #c0392b;
-    color: white;
     border: none;
+    color: white;
 }
 
 /* Card Styling */
 .card {
-    background-color: #1c1e24;
-    border: 1px solid #333;
-    border-radius: 10px;
-    padding: 15px;
-    color: #eee;
-    margin: 10px;
+    background-color: #1c1e24 !important;
+    border: 1px solid #2f2f2f;
+    border-radius: 12px;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-    transition: all 0.3s ease;
+    padding: 15px;
+    color: #ccc;
+    margin: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s ease;
 }
 
 .card:hover {
@@ -102,22 +102,22 @@ button.btn-danger {
 .card strong {
     display: block;
     font-size: 1rem;
-    color: #fff;
+    color: #f8f8f8;
+    font-weight: 600;
     margin-bottom: 5px;
+    transition: color 0.3s ease;
+}
+
+.card:hover strong {
+    color: #fff;
 }
 
 .card div {
     font-size: 0.9rem;
-    color: #bbb;
+    color: #ccc;
 }
 
-/* Parlay summary */
-h5 {
-    color: #f1f1f1;
-    margin-top: 1.5rem;
-}
-
-/* Responsive grid */
+/* Grid Layout */
 .row {
     display: flex;
     flex-wrap: wrap;
@@ -127,4 +127,78 @@ h5 {
 .col-md-3 {
     flex: 1 1 calc(25% - 1rem);
     min-width: 200px;
+}
+
+/* Parlay Likelihood Display */
+.total-parlay-odds {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 30px;
+    color: #00c474;
+}
+
+/* Gamelog Table Styling */
+.table {
+    background-color: #121416;
+    border: 1px solid #333;
+}
+
+.table thead th {
+    background-color: #1d1f23;
+    color: #ddd;
+    text-align: center;
+}
+
+.table tbody td {
+    text-align: center;
+    vertical-align: middle;
+    color: #eee;
+}
+
+.alert {
+    background-color: #1c1c1c;
+    color: #ccc;
+    border-color: #444;
+}
+
+/* Player Header in Gamelog */
+.player-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    text-align: left;
+}
+
+.player-image-wrapper {
+    flex-shrink: 0;
+}
+
+.player-thumb {
+    height: 72px;
+    width: auto;
+    border-radius: 8px;
+}
+
+.player-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+}
+
+/* Gamelog Button */
+.btn-primary {
+    background-color: #00c474;
+    border-color: #00c474;
+    color: #fff;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background-color: #00a962;
+    border-color: #009e5d;
 }
