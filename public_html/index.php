@@ -1,4 +1,5 @@
 <?php
+ob_start();
 session_start();
 require 'includes/database-connection.php';
 
@@ -17,17 +18,24 @@ foreach ($allPlayersRaw as $p) {
     $playerMap[$p['full_name']] = $p['team_id'];
 }
 
+// Handle parlay reset
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset'])) {
+    unset($_SESSION['parlay_results'], $_SESSION['parlay_probability']);
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
+}
+
 $parlay_results = [];
 $parlay_probability = null;
 
 if (isset($_SESSION['parlay_results'])) {
     $parlay_results = $_SESSION['parlay_results'];
     $parlay_probability = $_SESSION['parlay_probability'];
-    unset($_SESSION['parlay_results'], $_SESSION['parlay_probability']);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['legs'])) {
     $legs = $_POST['legs'];
+    $parlay_results = [];
 
     foreach ($legs as $leg) {
         $player = trim($leg['player_name']);
@@ -84,8 +92,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['legs'])) {
         $parlay_results[] = [
             'player' => $player,
             'stat_label' => str_replace('_', ' ', $statCol),
+            'stat_name' => $statCol,
+            'stat_type' => $type,
             'value' => $value,
             'over_under' => $overUnder,
+            'opponent_team_id' => $opponentTeamId,
             'opponent_name' => $teamsMap[$opponentTeamId] ?? 'Unknown',
             'prob' => $prob,
             'image' => $image
@@ -119,25 +130,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['legs'])) {
             <button type="button" class="btn btn-outline-primary" id="addLegBtn">+ Add Leg</button>
         </form>
 
+        <!-- Reset Button -->
+        <?php if (!empty($parlay_results)): ?>
+        <form method="POST" class="mt-2">
+            <input type="hidden" name="reset" value="1">
+            <button type="submit" class="btn btn-danger">Reset Parlay</button>
+        </form>
+        <?php endif; ?>
+
         <?php if (!empty($parlay_results)): ?>
             <div class="row mt-4">
                 <?php foreach ($parlay_results as $result): ?>
                     <div class="col-md-3">
-                        <div class="card">
+                        <div class="card p-2 mb-3">
                             <?php if (!empty($result['image'])): ?>
-                                <img src="<?= htmlspecialchars($result['image']) ?>" alt="<?= $result['player'] ?>">
+                                <img src="<?= htmlspecialchars($result['image']) ?>" alt="<?= $result['player'] ?>" class="img-fluid mb-2">
                             <?php else: ?>
-                                <img src="https://via.placeholder.com/64?text=?" alt="No Image">
+                                <img src="https://via.placeholder.com/64?text=?" alt="No Image" class="img-fluid mb-2">
                             <?php endif; ?>
                             <strong><?= htmlspecialchars($result['player']) ?></strong>
                             <div><?= ucfirst($result['stat_label']) ?> <?= ucfirst($result['over_under']) ?> <?= $result['value'] ?></div>
                             <div>vs. <?= htmlspecialchars($result['opponent_name']) ?></div>
                             <div>Likelihood: <?= round($result['prob'] * 100) ?>%</div>
+                            <a href="gamelog.php?player=<?= urlencode($result['player']) ?>&type=<?= urlencode($result['stat_type']) ?>&stat=<?= urlencode($result['stat_name']) ?>&opponent=<?= (int)$result['opponent_team_id'] ?>" class="btn btn-sm btn-secondary mt-2">View Gamelog</a>
                         </div>
                     </div>
                 <?php endforeach; ?>
             </div>
-            <h5 class="mt-3 text-light">Total Parlay Likelihood: <strong><?= round($parlay_probability * 100, 2) ?>%</strong></h5>
+            <div class="total-parlay-odds mt-3">
+                Total Parlay Likelihood: <strong><?= round($parlay_probability * 100, 2) ?>%</strong>
+            </div>
         <?php endif; ?>
     </div>
 
@@ -171,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['legs'])) {
 
         function createLegRow(index) {
             const row = document.createElement('div');
-            row.className = 'row align-items-end leg-row';
+            row.className = 'row align-items-end leg-row mb-2';
             row.dataset.index = index;
 
             row.innerHTML = `
@@ -207,7 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['legs'])) {
                     </select>
                 </div>
                 <div class="col-auto">
-                    <button type="button" class="btn btn-danger remove-leg" title="Remove">🗑</button>
+                    <button type="button" class="btn btn-danger remove-leg" title="Remove">×</button>
                 </div>
             `;
             return row;
@@ -266,3 +288,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['legs'])) {
     </script>
 </body>
 </html>
+
+<?php ob_end_flush(); ?>
