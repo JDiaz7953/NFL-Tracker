@@ -64,10 +64,10 @@ function App() {
     console.log('stat:', stat);
     console.log('value:', value);
   
-    // if (!playerName || !category || !stat || !value) {
-    //   console.warn('⚠️ Missing field, cannot submit pick');
-    //   return;
-    // }
+    if (!playerName || !category || !stat || !value) {
+      console.warn('⚠️ Missing field, cannot submit pick');
+      return;
+    }
 
     
     const p = players[0];

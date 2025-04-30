@@ -51,11 +51,10 @@ app.get("/api/players", (req, res) => {
   const params = [];
 
   if (name) {
-    sql += " WHERE full_name=?";
-    params.push(`%${name}%`);
-    
+    sql += " WHERE full_name = ?";
+    params.push(name);
   } else {
-    sql += " LIMIT 20";
+    sql += " LIMIT 10";
   }
 
   db.query(sql, params, (err, rows) => {
