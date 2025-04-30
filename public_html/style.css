@@ -1,0 +1,130 @@
+\/* General Layout */
+body {
+    background-color: #0f1115;
+    font-family: 'Segoe UI', sans-serif;
+    color: #ffffff;
+    padding: 20px;
+}
+
+h1 {
+    color: #f8f8f8;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+/* Form Styling */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Input group row */
+.leg-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    background-color: #1a1c22;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* Form Elements */
+input, select, button {
+    border-radius: 20px;
+    border: 1px solid #333;
+    background-color: #2a2c33;
+    color: #eee;
+    padding: 8px 12px;
+    font-size: 0.95rem;
+    border: 1px solid #444;
+}
+
+input::placeholder {
+    color: #888;
+}
+
+.form-select {
+    min-width: 120px;
+}
+
+button {
+    cursor: pointer;
+}
+
+button.btn-success {
+    background-color: #28a745;
+    border: none;
+}
+
+button.btn-outline-primary {
+    border: 1px solid #5a5c66;
+    background-color: #2a2c33;
+    color: #fff;
+}
+
+button.btn-outline-primary:hover {
+    background-color: #3a3d46;
+}
+
+button.btn-danger {
+    background-color: #c0392b;
+    color: white;
+    border: none;
+}
+
+/* Card Styling */
+.card {
+    background-color: #1c1e24;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 15px;
+    color: #eee;
+    margin: 10px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    background-color: #23252b;
+}
+
+.card img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.card strong {
+    display: block;
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.card div {
+    font-size: 0.9rem;
+    color: #bbb;
+}
+
+/* Parlay summary */
+h5 {
+    color: #f1f1f1;
+    margin-top: 1.5rem;
+}
+
+/* Responsive grid */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.col-md-3 {
+    flex: 1 1 calc(25% - 1rem);
+    min-width: 200px;
+}
