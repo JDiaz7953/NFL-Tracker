@@ -116,3 +116,8 @@ app.use((req, res) => {
 });
 
 
+app.listen(port, () => {
+  console.log(`Backend server running at http://localhost:${port}`);
+});
+
+
