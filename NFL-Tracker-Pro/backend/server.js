@@ -9,7 +9,7 @@ const port = process.env.PORT || 5050;
 
 // Allow React frontend at port 5173 to access the backend
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   if (req.method === "OPTIONS") {
@@ -44,20 +44,27 @@ app.get("/test", (req, res) => {
   res.send("Server is running on port 5050");
 });
 
-// ✅ Route: Get list of players
+// ✅ Route: Get a player by name
 app.get("/api/players", (req, res) => {
-  console.log("👉 /api/players route hit");
-  db.query(
-    "SELECT player_id AS id, full_name AS name, team_id AS team FROM players",
-    (err, rows) => {
-      if (err) {
-        console.error(" DB error:", err);
-        return res.status(500).json({ error: err.message });
-      }
-      console.log(`Players returned: ${rows.length}`);
-      res.json(rows);
+  const name = req.query.name || req.query.full_name;
+  let sql = "SELECT player_id AS id, full_name AS name, team_id AS team FROM players";
+  const params = [];
+
+  if (name) {
+    sql += " WHERE full_name=?";
+    params.push(`%${name}%`);
+    
+  } else {
+    sql += " LIMIT 20";
+  }
+
+  db.query(sql, params, (err, rows) => {
+    if (err) {
+      console.error("DB error:", err);
+      return res.status(500).json({ error: err.message });
     }
-  );
+    res.json(rows);
+  });
 });
 
 // ✅ Route: Calculate likelihood

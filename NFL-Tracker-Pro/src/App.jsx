@@ -28,29 +28,55 @@ function App() {
   const [value, setValue] = useState("");
   const [overUnder, setOverUnder] = useState("Over");
   const [picks, setPicks] = useState([]);
+  const [loading, setLoading] = useState(false);
+
 
   useEffect(() => {
-    fetch("http://localhost:5050/api/players")
+    if (!playerName.trim()) {
+      setPlayers([]);  // ⬅ Clear player result if input is empty
+      return;
+    }
+  
+    setLoading(true);
+    fetch(`http://localhost:5050/api/players?full_name=${encodeURIComponent(playerName)}`)
       .then(res => res.json())
-      .then(data => setPlayers(data))
-      .catch(console.error);
-  }, []);
+      .then(data => {
+        console.log("Fetched players for:", playerName, data);
+        setPlayers(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+  }, [playerName]);
+  
 
   const handleAddPick = () => {
+    if (loading) {
+      console.warn('⚠️ Loading, please wait before submitting a pick');
+      return;
+    }
+
     console.log('pressed');
     console.log('playerName:', playerName);
     console.log('category:', category);
     console.log('stat:', stat);
     console.log('value:', value);
   
-    if (!playerName || !category || !stat || !value) {
-      console.warn('⚠️ Missing field, cannot submit pick');
-      return;
-    }
-  
-    const p = players.find(p => p.name.toLowerCase().trim() === playerName.toLowerCase().trim());
+    // if (!playerName || !category || !stat || !value) {
+    //   console.warn('⚠️ Missing field, cannot submit pick');
+    //   return;
+    // }
+
+    
+    const p = players[0];
+    console.log('p:', p);
+    
     if (!p) {
+      
       console.warn('⚠️ Player not found in player list');
+
       return;
     }
   
