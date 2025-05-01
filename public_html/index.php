@@ -161,6 +161,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['legs'])) {
                 Total Parlay Likelihood: <strong><?= round($parlay_probability * 100, 2) ?>%</strong>
             </div>
         <?php endif; ?>
+        
+        <div class="text-end mb-3">
+            <a href="add_player.php" class="btn btn-outline-secondary">➕ Add Player</a>
+        </div>
     </div>
 
     <script>
