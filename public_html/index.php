@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['legs'])) {
         $overUnder = $leg['over_under'];
         $opponentTeamId = (int)$leg['opponent_team_id'];
 
-        $rankingCol = ($type === 'passing') ? 'pass_defense_ranking' : 'run_defense_ranking';
+        $rankingCol = 'total_defense_ranking';
         $statTable = match($type) {
             'passing' => 'passing_stats',
             'rushing' => 'rushing_stats',
@@ -61,21 +61,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['legs'])) {
         $rankLow = max(1, $rank - 3);
         $rankHigh = min(32, $rank + 3);
 
-        $playerId = pdo($pdo, "SELECT player_id FROM player_info WHERE full_name = ?", [$player])->fetchColumn();
-        if (!$playerId) {
+        $playerData = pdo($pdo, "SELECT player_id, team_id FROM player_info WHERE full_name = ?", [$player])->fetch();
+        if (!$playerData) {
             $parlay_results[] = ['player' => $player, 'prob' => 0, 'note' => 'Player not found'];
             continue;
         }
 
+        $playerId = $playerData['player_id'];
+        $playerTeamId = $playerData['team_id'];
+
+        // FINAL FIXED JOIN: restrict defense rankings to actual opponent + proper ranking range
         $sql = "
             SELECT s.$statCol
             FROM $statTable s
             JOIN game_info g ON s.game_id = g.game_id
-            JOIN defense_rankings d ON g.away_team_id = d.team_id OR g.home_team_id = d.team_id
+            JOIN player_info pi ON s.player_id = pi.player_id
+            JOIN defense_rankings d 
+              ON (
+                  (CASE 
+                      WHEN g.home_team_id = pi.team_id THEN g.away_team_id 
+                      ELSE g.home_team_id 
+                  END) = d.team_id
+                  AND d.$rankingCol BETWEEN ? AND ?
+              )
             WHERE s.player_id = ?
-            AND d.$rankingCol BETWEEN ? AND ?
         ";
-        $games = pdo($pdo, $sql, [$playerId, $rankLow, $rankHigh])->fetchAll();
+
+        $games = pdo($pdo, $sql, [$rankLow, $rankHigh, $playerId])->fetchAll();
         $total = count($games);
         $hits = 0;
 
@@ -130,7 +142,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['legs'])) {
             <button type="button" class="btn btn-outline-primary" id="addLegBtn">+ Add Leg</button>
         </form>
 
-        <!-- Reset Button -->
         <?php if (!empty($parlay_results)): ?>
         <form method="POST" class="mt-2">
             <input type="hidden" name="reset" value="1">
